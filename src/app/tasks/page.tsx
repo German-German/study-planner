@@ -1,17 +1,7 @@
-"use client";
-
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Play, GraduationCap, CheckCircle2, Pencil, Trash2, Home, Plus } from 'lucide-react';
-
-interface Task {
-  id: number;
-  title: string;
-  dueDate: string;
-  subject: string;
-  priority: 'high' | 'medium' | 'low';
-  completed: boolean;
-}
+import { storage, Task } from '@/lib/storage';
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -37,8 +27,7 @@ export default function TasksPage() {
 
   const fetchTasks = async () => {
     try {
-      const response = await fetch('/api/tasks');
-      const data = await response.json();
+      const data = storage.getTasks();
       setTasks(data);
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
@@ -70,18 +59,17 @@ export default function TasksPage() {
   const saveTask = async (id: number) => {
     setIsSaving(true);
     try {
-      const response = await fetch(`/api/tasks/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editFormData)
-      });
-      
-      if (response.ok) {
-        const updatedTask = await response.json();
+      const updatedTask = storage.updateTask(id, editFormData);
+      if (updatedTask) {
         setTasks(prev => prev.map(t => (t.id === id ? updatedTask : t)));
         setEditingId(null);
-      } else {
-        console.error('Failed to save task');
+        // Also call API as a background "no-op" for consistency if needed, 
+        // but it's not strictly necessary now.
+        fetch(`/api/tasks/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(editFormData)
+        });
       }
     } catch (error) {
       console.error('Error saving task:', error);
@@ -92,14 +80,14 @@ export default function TasksPage() {
 
   const toggleTaskCompletion = async (task: Task) => {
     try {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ completed: !task.completed })
-      });
-      if (response.ok) {
-        const updatedTask = await response.json();
+      const updatedTask = storage.updateTask(task.id, { completed: !task.completed });
+      if (updatedTask) {
         setTasks(prev => prev.map(t => (t.id === task.id ? updatedTask : t)));
+        fetch(`/api/tasks/${task.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ completed: !task.completed })
+        });
       }
     } catch (error) {
       console.error('Error toggling completion:', error);
@@ -108,11 +96,10 @@ export default function TasksPage() {
 
   const deleteTask = async (id: number) => {
     try {
-      const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        setTasks(prev => prev.filter(t => t.id !== id));
-        setDeletingTaskId(null);
-      }
+      storage.deleteTask(id);
+      setTasks(prev => prev.filter(t => t.id !== id));
+      setDeletingTaskId(null);
+      fetch(`/api/tasks/${id}`, { method: 'DELETE' });
     } catch (error) {
       console.error('Error deleting task:', error);
     }
@@ -120,7 +107,20 @@ export default function TasksPage() {
 
   const gradeTask = async (task: Task) => {
     try {
-      const response = await fetch('/api/stats', {
+      storage.addGrade({
+        taskTitle: task.title,
+        subject: task.subject,
+        grade: gradeValue,
+        date: new Date().toLocaleDateString()
+      });
+      
+      storage.deleteTask(task.id);
+      setTasks(prev => prev.filter(t => t.id !== task.id));
+      setGradingTaskId(null);
+      setGradeValue('A');
+
+      // Update backend (no-op)
+      fetch('/api/stats', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -132,15 +132,8 @@ export default function TasksPage() {
           }
         })
       });
+      fetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
 
-      if (response.ok) {
-        // Now delete it from the task list (backend)
-        await fetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
-        
-        setTasks(prev => prev.filter(t => t.id !== task.id));
-        setGradingTaskId(null);
-        setGradeValue('A');
-      }
     } catch (error) {
       console.error('Error grading task:', error);
     }

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Timer, Pause, Play, RefreshCw, X, CheckCircle2, Trophy, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { storage } from '@/lib/storage';
 
 function FocusContent() {
   const searchParams = useSearchParams();
@@ -26,6 +27,11 @@ function FocusContent() {
 
   useEffect(() => {
     if (taskId) {
+        const tasks = storage.getTasks();
+        const task = tasks.find((t: any) => t.id === parseInt(taskId));
+        if (task) setTaskTitle(task.title);
+        
+        // Background fetch for consistency
         fetch('/api/tasks')
             .then(res => res.json())
             .then(tasks => {
@@ -61,7 +67,9 @@ function FocusContent() {
       
       // Log session in stats
       try {
-        await fetch('/api/stats', {
+        storage.addFocusSession(25);
+        // Background fetch for consistency
+        fetch('/api/stats', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ focusTimeMinutes: 25 })

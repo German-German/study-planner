@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { storage } from '@/lib/storage';
 
 export default function NewTaskPage() {
   const router = useRouter();
@@ -11,7 +12,7 @@ export default function NewTaskPage() {
     title: '',
     dueDate: '',
     subject: '',
-    priority: 'medium',
+    priority: 'medium' as 'low' | 'medium' | 'high',
     completed: false
   });
   
@@ -29,16 +30,14 @@ export default function NewTaskPage() {
     setError('');
 
     try {
-      const response = await fetch('/api/tasks', {
+      storage.addTask(formData);
+      
+      // Still call API as a background "no-op" for consistency
+      fetch('/api/tasks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.details || errorData.error || 'Failed to create task');
-      }
 
       router.push('/tasks');
       router.refresh();

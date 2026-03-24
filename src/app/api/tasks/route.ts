@@ -20,10 +20,15 @@ async function ensureDataFileExists() {
 export async function GET() {
   try {
     const filePath = getDataFilePath();
-    await ensureDataFileExists();
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const data = JSON.parse(fileContent);
-    return NextResponse.json(data.tasks || []);
+    // Only try to read if it exists, otherwise return empty
+    try {
+      await fs.access(filePath);
+      const fileContent = await fs.readFile(filePath, 'utf-8');
+      const data = JSON.parse(fileContent);
+      return NextResponse.json(data.tasks || []);
+    } catch {
+      return NextResponse.json([]);
+    }
   } catch (error) {
     console.error('Failed to read tasks data:', error);
     return NextResponse.json({ error: 'Failed to read tasks data' }, { status: 500 });
@@ -32,34 +37,18 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const filePath = getDataFilePath();
-    await ensureDataFileExists();
-    
-    // Read the new task from the request body
+    // In serverless environments, we cannot write to the filesystem.
+    // The frontend has been migrated to use LocalStorage.
+    // We return the task as if it was saved to maintain backward compatibility during migration.
     const newTask = await request.json();
-    
-    const fileContent = await fs.readFile(filePath, 'utf-8');
-    const data = JSON.parse(fileContent);
-
-    if (!data.tasks) {
-      data.tasks = [];
-    }
-
-    // Assign a new ID (could also use crypto.randomUUID(), but sticking to numeric id for now)
-    const newId = data.tasks.length > 0 ? Math.max(...data.tasks.map((t: any) => t.id)) + 1 : 1;
-    
     const taskToAdd = {
-      id: newId,
+      id: Date.now(),
       ...newTask
     };
 
-    // Add the new task and write back to the file
-    data.tasks.push(taskToAdd);
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf-8');
-
     return NextResponse.json(taskToAdd, { status: 201 });
   } catch (error: any) {
-    console.error('Failed to save the new task:', error);
+    console.error('Failed to "save" the new task:', error);
     return NextResponse.json({ 
       error: 'Failed to save the new task data', 
       details: error.message 

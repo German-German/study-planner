@@ -15,12 +15,7 @@ import {
   LogOut
 } from 'lucide-react';
 
-interface Profile {
-  name: string;
-  avatarUrl: string;
-  university: string;
-  major: string;
-}
+import { storage, Profile } from '@/lib/storage';
 
 export default function ProfileMenu() {
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -28,6 +23,10 @@ export default function ProfileMenu() {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const data = storage.getProfile();
+    setProfile(data);
+
+    // Background fetch for consistency
     fetch('/api/profile')
       .then(res => res.json())
       .then(data => {

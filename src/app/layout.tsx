@@ -14,6 +14,7 @@ const geistMono = Geist_Mono({
 
 import ProfileMenu from "@/components/ProfileMenu";
 import TaskFAB from "@/components/TaskFAB";
+import StorageInitializer from "@/components/StorageInitializer";
 
 export const metadata: Metadata = {
   title: "Study Planner",
@@ -31,6 +32,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} antialiased`}
     >
       <body className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 overflow-x-hidden">
+        <StorageInitializer />
         <nav className="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div className="flex items-center gap-4 sm:gap-8">

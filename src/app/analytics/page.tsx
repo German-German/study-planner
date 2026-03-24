@@ -8,11 +8,7 @@ import {
 import { TrendingUp, Target, Award, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
-interface Stats {
-  coins: number;
-  totalFocusTime: number;
-  completedTasks: { day: string; count: number }[];
-}
+import { storage, Stats } from '@/lib/storage';
 
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -21,12 +17,21 @@ export default function AnalyticsPage() {
 
   useEffect(() => {
     setHasMounted(true);
-    fetch('/api/stats')
-//...
-      .catch(err => {
-        console.error('Failed to fetch stats', err);
-        setLoading(false);
-      });
+    try {
+      const data = storage.getStats();
+      setStats(data);
+      // Background fetch for consistency
+      fetch('/api/stats')
+        .then(res => res.json())
+        .then(data => {
+            if (data && !data.error) setStats(data);
+        })
+        .catch(console.error);
+    } catch (err) {
+      console.error('Failed to fetch stats', err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   if (loading) return (
