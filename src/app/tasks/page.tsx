@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { Play, GraduationCap, CheckCircle2, Pencil, Trash2, Home, Plus } from 'lucide-react';
 
 interface Task {
   id: number;
@@ -24,6 +25,10 @@ export default function TasksPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<Task>>({});
   const [isSaving, setIsSaving] = useState(false);
+  
+  // Grading State
+  const [gradingTaskId, setGradingTaskId] = useState<number | null>(null);
+  const [gradeValue, setGradeValue] = useState('A');
 
   useEffect(() => {
     fetchTasks();
@@ -100,8 +105,8 @@ export default function TasksPage() {
     }
   };
 
-  const deleteTask = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+  const deleteTask = async (id: number, silent = false) => {
+    if (!silent && !confirm('Are you sure you want to delete this task?')) return;
     
     try {
       const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
@@ -110,6 +115,31 @@ export default function TasksPage() {
       }
     } catch (error) {
       console.error('Error deleting task:', error);
+    }
+  };
+
+  const gradeTask = async (task: Task) => {
+    try {
+      const response = await fetch('/api/stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          newGrade: {
+            taskTitle: task.title,
+            subject: task.subject,
+            grade: gradeValue,
+            date: new Date().toLocaleDateString()
+          }
+        })
+      });
+
+      if (response.ok) {
+        await deleteTask(task.id, true);
+        setGradingTaskId(null);
+        setGradeValue('A');
+      }
+    } catch (error) {
+      console.error('Error grading task:', error);
     }
   };
 
@@ -156,9 +186,7 @@ export default function TasksPage() {
               href="/"
               className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-white dark:bg-slate-900 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-200 shadow-sm ring-1 ring-inset ring-slate-300 dark:ring-slate-700 transition-all hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-              </svg>
+              <Home className="h-4 w-4" />
               Home
             </Link>
           </div>
@@ -286,9 +314,7 @@ export default function TasksPage() {
                       >
                         {isSaving ? '...' : (
                           <>
-                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                            </svg>
+                            <CheckCircle2 className="h-4 w-4" />
                             Save
                           </>
                         )}
@@ -298,7 +324,7 @@ export default function TasksPage() {
                 ) : (
                   /* VIEW MODE UI */
                   <>
-                    <div>
+                    <div className="flex flex-col h-full">
                       {/* Top Bar: Subject & Actions */}
                       <div className="flex items-start justify-between mb-4">
                         <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset ${task.completed ? 'bg-slate-100 text-slate-600 ring-slate-500/20 dark:bg-slate-800 dark:text-slate-400' : 'bg-indigo-50 text-indigo-700 ring-indigo-600/20 dark:bg-indigo-500/10 dark:text-indigo-400 dark:ring-indigo-500/20'}`}>
@@ -307,41 +333,79 @@ export default function TasksPage() {
                         
                         {/* Hover Actions */}
                         <div className="flex items-center gap-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                          {!task.completed && (
+                            <Link
+                              href={`/focus?taskId=${task.id}`}
+                              className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                              title="Start Focus Mode"
+                            >
+                              <Play className="h-5 w-5 fill-current" />
+                            </Link>
+                          )}
+                          {task.completed && (
+                            <button
+                              onClick={() => setGradingTaskId(task.id)}
+                              className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                              title="Grade Task"
+                            >
+                              <GraduationCap className="h-5 w-5" />
+                            </button>
+                          )}
                           <button
                             onClick={() => toggleTaskCompletion(task)}
                             className="p-1 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                             title={task.completed ? "Mark incomplete" : "Mark complete"}
                           >
-                            {task.completed ? (
-                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                              </svg>
-                            ) : (
-                              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                              </svg>
-                            )}
+                            <CheckCircle2 className={`h-5 w-5 ${task.completed ? 'text-emerald-500' : ''}`} />
                           </button>
                           <button
                             onClick={() => startEditing(task)}
                             className="p-1 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                             title="Edit task"
                           >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
-                            </svg>
+                            <Pencil className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => deleteTask(task.id)}
                             className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                             title="Delete task"
                           >
-                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                            </svg>
+                            <Trash2 className="h-5 w-5" />
                           </button>
                         </div>
                       </div>
+
+                      {/* Grading Prompt Overlay */}
+                      {gradingTaskId === task.id && (
+                        <div className="absolute inset-0 z-20 bg-white/95 dark:bg-slate-900/95 flex flex-col items-center justify-center p-6 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white mb-4">Assign a Grade</p>
+                          <div className="flex gap-2 mb-6">
+                            {['A', 'B', 'C', 'D', 'F'].map(g => (
+                              <button
+                                key={g}
+                                onClick={() => setGradeValue(g)}
+                                className={`w-10 h-10 rounded-xl font-bold transition-all ${gradeValue === g ? 'bg-indigo-600 text-white scale-110 shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'}`}
+                              >
+                                {g}
+                              </button>
+                            ))}
+                          </div>
+                          <div className="flex gap-3 w-full">
+                            <button 
+                              onClick={() => setGradingTaskId(null)}
+                              className="flex-1 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={() => gradeTask(task)}
+                              className="flex-1 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-lg hover:bg-indigo-500 shadow-md transition-all active:scale-95"
+                            >
+                              Submit
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       <div className="flex items-center gap-2 mb-2">
                         <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border uppercase tracking-wider ${getPriorityColor(task.priority, task.completed)}`}>
@@ -352,14 +416,14 @@ export default function TasksPage() {
                       <h3 className={`text-xl font-semibold mb-2 transition-colors ${task.completed ? 'text-slate-500 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400'}`}>
                         {task.title}
                       </h3>
-                    </div>
-                    
-                    <div className={`mt-6 flex items-center justify-between text-sm ${task.completed ? 'text-slate-400 dark:text-slate-600' : 'text-slate-500 dark:text-slate-400'}`}>
-                      <div className="flex items-center">
-                        <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
-                        </svg>
-                        Due {task.dueDate}
+
+                      <div className={`mt-auto pt-6 flex items-center justify-between text-sm ${task.completed ? 'text-slate-400 dark:text-slate-600' : 'text-slate-500 dark:text-slate-400'}`}>
+                        <div className="flex items-center">
+                          <svg className="mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+                          </svg>
+                          Due {task.dueDate}
+                        </div>
                       </div>
                     </div>
                   </>

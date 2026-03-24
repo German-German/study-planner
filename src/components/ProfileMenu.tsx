@@ -2,6 +2,18 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { 
+  User, 
+  Settings, 
+  LayoutDashboard, 
+  BarChart3, 
+  GraduationCap, 
+  Timer, 
+  Users, 
+  ChevronDown,
+  Home,
+  LogOut
+} from 'lucide-react';
 
 interface Profile {
   name: string;
@@ -50,9 +62,7 @@ export default function ProfileMenu() {
         <span className="hidden sm:block text-sm font-semibold text-slate-700 dark:text-slate-200">
           {profile?.name || 'Account'}
         </span>
-        <svg className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-        </svg>
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {isOpen && (
@@ -67,19 +77,48 @@ export default function ProfileMenu() {
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
+              <User className="w-4 h-4 opacity-70" />
               Account Settings
             </Link>
+            <Link
+              href="/analytics"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <BarChart3 className="w-4 h-4 opacity-70 text-indigo-500" />
+              Analytics Dashboard
+            </Link>
+            <Link
+              href="/grades"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <GraduationCap className="w-4 h-4 opacity-70 text-emerald-500" />
+              Academic Grades
+            </Link>
+            <Link
+              href="/focus"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Timer className="w-4 h-4 opacity-70 text-rose-500" />
+              Focus Mode
+            </Link>
+            <Link
+              href="/sharespace"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <Users className="w-4 h-4 opacity-70 text-blue-500" />
+              Group Share Space
+            </Link>
+            <div className="my-1 border-t border-slate-100 dark:border-slate-800"></div>
             <Link
               href="/tasks"
               onClick={() => setIsOpen(false)}
               className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
             >
-              <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
+              <LayoutDashboard className="w-4 h-4 opacity-70" />
               My Tasks
             </Link>
           </div>

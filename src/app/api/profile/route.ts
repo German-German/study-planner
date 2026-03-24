@@ -11,7 +11,7 @@ export async function GET() {
       await fs.access(filePath);
     } catch {
       // If file doesn't exist, create it with default data
-      const defaultData = { name: '', avatarUrl: '', university: '', major: '' };
+      const defaultData = { name: '', avatarUrl: '', university: '', major: '', coins: 0 };
       await fs.mkdir(path.dirname(filePath), { recursive: true });
       await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2), 'utf-8');
       return NextResponse.json(defaultData);
@@ -31,7 +31,7 @@ export async function PUT(request: Request) {
     const updates = await request.json();
     const filePath = getProfileFilePath();
     
-    let currentData = { name: '', avatarUrl: '', university: '', major: '' };
+    let currentData = { name: '', avatarUrl: '', university: '', major: '', coins: 0 };
     try {
       const fileContent = await fs.readFile(filePath, 'utf-8');
       currentData = JSON.parse(fileContent);
