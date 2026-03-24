@@ -16,6 +16,7 @@ function FocusContent() {
   const [isBreak, setIsBreak] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const [showReward, setShowReward] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -146,12 +147,16 @@ function FocusContent() {
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-7xl font-black tracking-tighter tabular-nums mb-2">
-              {formatTime(timeLeft)}
-            </span>
-            <span className={`text-sm font-bold uppercase tracking-widest ${isBreak ? 'text-emerald-400' : 'text-slate-400'}`}>
-              {isBreak ? 'Take a Break' : 'Focus Time'}
-            </span>
+            {hasMounted && (
+              <>
+                <span className="text-7xl font-black tracking-tighter tabular-nums mb-2">
+                  {formatTime(timeLeft)}
+                </span>
+                <span className={`text-sm font-bold uppercase tracking-widest ${isBreak ? 'text-emerald-400' : 'text-slate-400'}`}>
+                  {isBreak ? 'Take a Break' : 'Focus Time'}
+                </span>
+              </>
+            )}
           </div>
         </div>
 
