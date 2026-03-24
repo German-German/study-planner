@@ -52,7 +52,6 @@ export async function DELETE(
   try {
     const resolvedParams = await params;
     const id = parseInt(resolvedParams.id, 10);
-    console.log(`Deleting task with ID: ${id}`);
     
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid task ID' }, { status: 400 });
