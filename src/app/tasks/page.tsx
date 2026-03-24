@@ -140,7 +140,7 @@ export default function TasksPage() {
     });
 
   return (
-    <main className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 p-6 sm:p-12 md:p-24 font-sans">
+    <main className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 p-4 sm:p-12 md:p-24 font-sans">
       <div className="max-w-6xl mx-auto">
         <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-12">
           <div>
@@ -160,15 +160,6 @@ export default function TasksPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
               </svg>
               Home
-            </Link>
-            <Link
-              href="/tasks/new"
-              className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 active:scale-95"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              New Task
             </Link>
           </div>
         </header>

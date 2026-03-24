@@ -50,7 +50,7 @@ export default function NewTaskPage() {
   };
 
   return (
-    <main className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 p-6 sm:p-12 md:p-24 font-sans">
+    <main className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 p-4 sm:p-12 md:p-24 font-sans text-slate-900 dark:text-slate-50">
       <div className="max-w-2xl mx-auto">
         <header className="mb-8 flex items-center justify-between">
           <div>
@@ -63,7 +63,7 @@ export default function NewTaskPage() {
           </div>
         </header>
 
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 p-6 sm:p-8">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 p-5 sm:p-8">
           {error && (
             <div className="mb-6 rounded-md bg-red-50 dark:bg-red-500/10 p-4 border border-red-200 dark:border-red-500/20">
               <div className="flex">

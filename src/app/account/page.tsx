@@ -114,14 +114,14 @@ export default function AccountPage() {
   }
 
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center py-12 px-4 sm:px-8 bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-slate-900 dark:to-slate-800">
-      <div className="w-full max-w-2xl mt-10">
-        <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 text-center drop-shadow-sm">
+    <main className="flex min-h-[100dvh] flex-col items-center py-8 px-4 sm:px-8 bg-gradient-to-br from-indigo-50 to-blue-100 dark:from-slate-900 dark:to-slate-800 text-slate-900 dark:text-slate-50">
+      <div className="w-full max-w-2xl mt-4 sm:mt-10">
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-2 text-center drop-shadow-sm">
           Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-cyan-500">Account</span>
         </h1>
         <p className="text-center text-slate-600 dark:text-slate-400 mb-10 font-medium">Manage your personal and academic profile.</p>
 
-        <div className="bg-white/60 dark:bg-slate-950/40 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 shadow-2xl border border-white/40 dark:border-slate-800/60 transition-all hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.2)] dark:hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.1)]">
+        <div className="bg-white/60 dark:bg-slate-950/40 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 shadow-2xl border border-white/40 dark:border-slate-800/60 transition-all hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.2)] dark:hover:shadow-[0_20px_60px_-15px_rgba(79,70,229,0.1)]">
           <form onSubmit={handleSubmit} className="space-y-8">
             <div className="flex flex-col sm:flex-row items-center gap-8 mb-8 pb-8 border-b border-slate-200 dark:border-slate-800">
               <div className="relative group">
