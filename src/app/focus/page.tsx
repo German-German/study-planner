@@ -19,6 +19,10 @@ function FocusContent() {
   const [hasMounted, setHasMounted] = useState(false);
   
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   useEffect(() => {
     if (taskId) {
