@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { storage, Profile } from '@/lib/storage';
 
 export default function AccountPage() {
@@ -35,7 +36,7 @@ export default function AccountPage() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setProfile((prev: Profile) => ({ ...prev, [e.target.name]: e.target.value }));
     setSaveStatus(null);
   };
 
@@ -45,7 +46,7 @@ export default function AccountPage() {
     setSaveStatus(null);
 
     try {
-      storage.setProfile(profile);
+      storage.updateProfile(profile);
       
       // Still call API as a background "no-op" for consistency
       fetch('/api/profile', {
@@ -84,7 +85,7 @@ export default function AccountPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setProfile(prev => ({ ...prev, avatarUrl: data.url }));
+        setProfile((prev: Profile) => ({ ...prev, avatarUrl: data.url }));
       } else {
         setUploadError(data.details || data.error || 'Failed to upload image');
       }
