@@ -11,21 +11,29 @@ interface Grade {
   date: string;
 }
 
+import { storage } from '@/lib/storage';
+
 export default function GradesPage() {
   const [grades, setGrades] = useState<Grade[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => {
-        setGrades(data.grades || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to fetch grades', err);
-        setLoading(false);
-      });
+    try {
+      const data = storage.getStats();
+      setGrades(data.grades || []);
+      
+      // Background fetch for consistency
+      fetch('/api/stats')
+        .then(res => res.json())
+        .then(data => {
+          if (data && !data.error) setGrades(data.grades || []);
+        })
+        .catch(console.error);
+    } catch (err) {
+      console.error('Failed to fetch grades', err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const calculateGPA = () => {

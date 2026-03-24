@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { storage, Profile } from '@/lib/storage';
 
 export default function AccountPage() {
-  const [profile, setProfile] = useState({
+  const [profile, setProfile] = useState<Profile>({
     name: '',
     avatarUrl: '',
     university: '',
@@ -16,23 +16,22 @@ export default function AccountPage() {
   const [uploadError, setUploadError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/profile')
-      .then(res => res.json())
-      .then(data => {
-        if (!data.error) {
-          setProfile({
-            name: data.name || '',
-            avatarUrl: data.avatarUrl || '',
-            university: data.university || '',
-            major: data.major || ''
-          });
-        }
-        setIsLoading(false);
-      })
-      .catch(err => {
-        console.error('Failed to load profile', err);
-        setIsLoading(false);
-      });
+    try {
+      const data = storage.getProfile();
+      setProfile(data);
+
+      // Background fetch for consistency
+      fetch('/api/profile')
+        .then(res => res.json())
+        .then(data => {
+          if (data && !data.error) setProfile(data);
+        })
+        .catch(console.error);
+    } catch (err) {
+      console.error('Failed to load profile', err);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +45,10 @@ export default function AccountPage() {
     setSaveStatus(null);
 
     try {
-      const res = await fetch('/api/profile', {
+      storage.setProfile(profile);
+      
+      // Still call API as a background "no-op" for consistency
+      fetch('/api/profile', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -54,11 +56,7 @@ export default function AccountPage() {
         body: JSON.stringify(profile),
       });
 
-      if (res.ok) {
-        setSaveStatus('success');
-      } else {
-        setSaveStatus('error');
-      }
+      setSaveStatus('success');
     } catch (error) {
       console.error('Failed to save profile', error);
       setSaveStatus('error');
