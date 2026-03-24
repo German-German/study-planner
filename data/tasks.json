@@ -23,6 +23,38 @@
       "subject": "lit 101",
       "priority": "high",
       "completed": false
+    },
+    {
+      "id": 5,
+      "title": "Test Task",
+      "dueDate": "2026-04-01",
+      "subject": "Computer Science",
+      "priority": "high",
+      "completed": false
+    },
+    {
+      "id": 6,
+      "title": "Test Math",
+      "dueDate": "2026-03-27",
+      "subject": "Math 101",
+      "priority": "high",
+      "completed": false
+    },
+    {
+      "id": 7,
+      "title": "Manual Test",
+      "dueDate": "2026-04-01",
+      "subject": "Testing",
+      "priority": "low",
+      "completed": false
+    },
+    {
+      "id": 8,
+      "title": "Verification Task",
+      "dueDate": "2026-04-05",
+      "subject": "Science",
+      "priority": "medium",
+      "completed": false
     }
   ]
 }

@@ -36,7 +36,8 @@ export default function NewTaskPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create task');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || 'Failed to create task');
       }
 
       router.push('/tasks');
