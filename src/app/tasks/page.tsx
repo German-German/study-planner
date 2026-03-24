@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Play, GraduationCap, CheckCircle2, Pencil, Trash2, Home, Plus } from 'lucide-react';
