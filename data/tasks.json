@@ -1,14 +1,6 @@
 {
   "tasks": [
     {
-      "id": 6,
-      "title": "Test Math",
-      "dueDate": "2026-03-27",
-      "subject": "Math 101",
-      "priority": "high",
-      "completed": false
-    },
-    {
       "id": 7,
       "title": "Manual Test",
       "dueDate": "2026-04-01",
