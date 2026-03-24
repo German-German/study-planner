@@ -6,11 +6,12 @@ const getDataFilePath = () => path.join(process.cwd(), 'data/tasks.json');
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params;
     // Manually extract ID from URL to avoid Next14/15 param await issues
-    const idStr = request.url.split('/').pop() || params.id;
+    const idStr = request.url.split('/').pop() || resolvedParams.id;
     const id = parseInt(idStr, 10);
     
     if (isNaN(id)) {
@@ -48,10 +49,11 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const idStr = request.url.split('/').pop() || params.id;
+    const resolvedParams = await params;
+    const idStr = request.url.split('/').pop() || resolvedParams.id;
     const id = parseInt(idStr, 10);
     
     if (isNaN(id)) {
