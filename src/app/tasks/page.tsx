@@ -26,8 +26,9 @@ export default function TasksPage() {
   const [editFormData, setEditFormData] = useState<Partial<Task>>({});
   const [isSaving, setIsSaving] = useState(false);
   
-  // Grading State
+  // Grading/Deleting State
   const [gradingTaskId, setGradingTaskId] = useState<number | null>(null);
+  const [deletingTaskId, setDeletingTaskId] = useState<number | null>(null);
   const [gradeValue, setGradeValue] = useState('A');
 
   useEffect(() => {
@@ -105,13 +106,12 @@ export default function TasksPage() {
     }
   };
 
-  const deleteTask = async (id: number, silent = false) => {
-    if (!silent && !confirm('Are you sure you want to delete this task?')) return;
-    
+  const deleteTask = async (id: number) => {
     try {
       const response = await fetch(`/api/tasks/${id}`, { method: 'DELETE' });
       if (response.ok) {
         setTasks(prev => prev.filter(t => t.id !== id));
+        setDeletingTaskId(null);
       }
     } catch (error) {
       console.error('Error deleting task:', error);
@@ -134,7 +134,7 @@ export default function TasksPage() {
       });
 
       if (response.ok) {
-        await deleteTask(task.id, true);
+        setTasks(prev => prev.filter(t => t.id !== task.id));
         setGradingTaskId(null);
         setGradeValue('A');
       }
@@ -366,7 +366,7 @@ export default function TasksPage() {
                             <Pencil className="h-5 w-5" />
                           </button>
                           <button
-                            onClick={() => deleteTask(task.id)}
+                            onClick={() => setDeletingTaskId(task.id)}
                             className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                             title="Delete task"
                           >
@@ -374,6 +374,31 @@ export default function TasksPage() {
                           </button>
                         </div>
                       </div>
+
+                      {/* Delete Confirmation Overlay */}
+                      {deletingTaskId === task.id && (
+                        <div className="absolute inset-0 z-20 bg-white/95 dark:bg-slate-900/95 flex flex-col items-center justify-center p-6 rounded-2xl animate-in fade-in zoom-in-95 duration-200">
+                          <div className="w-12 h-12 bg-rose-50 dark:bg-rose-900/20 rounded-full flex items-center justify-center mb-4">
+                            <Trash2 className="w-6 h-6 text-rose-500" />
+                          </div>
+                          <p className="text-sm font-bold text-slate-900 dark:text-white mb-2">Delete Task?</p>
+                          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6 text-center px-4">This action cannot be undone.</p>
+                          <div className="flex gap-3 w-full">
+                            <button 
+                              onClick={() => setDeletingTaskId(null)}
+                              className="flex-1 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800"
+                            >
+                              Cancel
+                            </button>
+                            <button 
+                              onClick={() => deleteTask(task.id)}
+                              className="flex-1 py-2 text-xs font-semibold text-white bg-rose-600 rounded-lg hover:bg-rose-500 shadow-md transition-all active:scale-95"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Grading Prompt Overlay */}
                       {gradingTaskId === task.id && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Users, UserPlus, MessageSquare, ListTodo, Send, Share2, Globe, Lock, Bell, Plus, Trash2 } from 'lucide-react';
+import { Users, UserPlus, MessageSquare, ListTodo, Send, Share2, Globe, Lock, Bell, Plus, Trash2, X } from 'lucide-react';
 
 interface SharedTask {
   id: number;
@@ -22,6 +22,8 @@ export default function ShareSpacePage() {
   const [activeTab, setActiveTab] = useState<'tasks' | 'chat'>('tasks');
   const [inviteCode] = useState('STUDY-2024-XP');
   const [copied, setCopied] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
   
   const [tasks, setTasks] = useState<SharedTask[]>([
     { id: 1, title: 'Final Project Documentation', assignedTo: 'Alex', status: 'in-progress' },
@@ -133,11 +135,57 @@ export default function ShareSpacePage() {
                             </div>
                         </div>
                     ))}
-                    <button className="w-10 h-10 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all">
+                    <button 
+                        onClick={() => setShowInviteModal(true)}
+                        className="w-10 h-10 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-500 transition-all font-bold"
+                    >
                         <Plus className="w-5 h-5" />
                     </button>
                 </div>
              </div>
+
+             {/* Invite Modal */}
+             {showInviteModal && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-300">
+                    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-10 rounded-[2rem] shadow-2xl max-w-sm w-full relative">
+                        <button 
+                            onClick={() => setShowInviteModal(false)}
+                            className="absolute top-6 right-6 p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors"
+                        >
+                            <X className="w-5 h-5 text-slate-400" />
+                        </button>
+                        <div className="mb-8 text-center">
+                            <div className="w-16 h-16 bg-indigo-50 dark:bg-indigo-900/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                <UserPlus className="w-8 h-8 text-indigo-600" />
+                            </div>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Invite Member</h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">Send an invitation to join your group.</p>
+                        </div>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1 mb-1 block">Email Address</label>
+                                <input 
+                                    type="email"
+                                    value={inviteEmail}
+                                    onChange={(e) => setInviteEmail(e.target.value)}
+                                    placeholder="classmate@university.edu"
+                                    className="w-full bg-slate-50 dark:bg-slate-800 border-0 p-4 rounded-xl text-sm focus:ring-2 focus:ring-indigo-600 font-medium"
+                                />
+                            </div>
+                            <button 
+                                onClick={() => {
+                                    alert(`Invitation sent to ${inviteEmail}`);
+                                    setShowInviteModal(false);
+                                    setInviteEmail('');
+                                }}
+                                className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+                            >
+                                Send Invitation
+                            </button>
+                        </div>
+                    </div>
+                </div>
+             )}
           </div>
 
           {/* Main Content Area */}

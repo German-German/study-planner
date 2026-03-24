@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Timer, Pause, Play, RefreshCw, X, CheckCircle2, Trophy } from 'lucide-react';
+import { Timer, Pause, Play, RefreshCw, X, CheckCircle2, Trophy, Plus } from 'lucide-react';
 import Link from 'next/link';
 
-export default function FocusPage() {
+function FocusContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const taskId = searchParams.get('taskId');
@@ -222,5 +222,18 @@ export default function FocusPage() {
         </p>
       </footer>
     </main>
+  );
+}
+
+export default function FocusPage() {
+  return (
+    <Suspense fallback={
+        <div className="fixed inset-0 bg-slate-900 flex flex-col items-center justify-center text-white">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-white/20 border-t-indigo-600 mb-4" />
+            <p className="text-sm font-medium text-slate-400">Loading Focus Mode...</p>
+        </div>
+    }>
+      <FocusContent />
+    </Suspense>
   );
 }
