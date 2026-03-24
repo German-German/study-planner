@@ -79,3 +79,11 @@ export async function DELETE(
     return NextResponse.json({ error: 'Failed to delete task data' }, { status: 500 });
   }
 }
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  // Delegate completely to PUT since it handles partial updates perfectly
+  return PUT(request, { params });
+}

@@ -16,6 +16,10 @@ export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   
+  // Filter & Sort State
+  const [subjectFilter, setSubjectFilter] = useState<string>('All');
+  const [sortDateNearest, setSortDateNearest] = useState<boolean>(false);
+
   // Edit State
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editFormData, setEditFormData] = useState<Partial<Task>>({});
@@ -83,7 +87,7 @@ export default function TasksPage() {
   const toggleTaskCompletion = async (task: Task) => {
     try {
       const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ completed: !task.completed })
       });
@@ -124,6 +128,17 @@ export default function TasksPage() {
     }
   };
 
+  const subjects = ['All', ...Array.from(new Set(tasks.map(t => t.subject))).filter(Boolean)];
+
+  const filteredAndSortedTasks = tasks
+    .filter(t => subjectFilter === 'All' || t.subject === subjectFilter)
+    .sort((a, b) => {
+      if (!sortDateNearest) return 0;
+      const dateA = new Date(a.dueDate).getTime();
+      const dateB = new Date(b.dueDate).getTime();
+      return dateA - dateB;
+    });
+
   return (
     <main className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 p-6 sm:p-12 md:p-24 font-sans">
       <div className="max-w-6xl mx-auto">
@@ -158,6 +173,37 @@ export default function TasksPage() {
           </div>
         </header>
 
+        {!loading && tasks.length > 0 && (
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800 mb-6 gap-4">
+            <div className="flex items-center gap-3 w-full sm:w-auto">
+              <label htmlFor="subject-filter" className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">Filter by Subject:</label>
+              <select
+                id="subject-filter"
+                value={subjectFilter}
+                onChange={(e) => setSubjectFilter(e.target.value)}
+                className="w-full sm:w-auto rounded-lg border-0 py-2 pl-3 pr-10 text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-800 ring-1 ring-inset ring-slate-300 dark:ring-slate-600 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm"
+              >
+                {subjects.map(sub => (
+                  <option key={sub} value={sub}>{sub}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              onClick={() => setSortDateNearest(prev => !prev)}
+              className={`inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                sortDateNearest 
+                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400 ring-1 ring-indigo-200 dark:ring-indigo-800' 
+                  : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+              }`}
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h5.25m5.25-.75L17.25 9m0 0L21 12.75M17.25 9v12" />
+              </svg>
+              {sortDateNearest ? 'Sorted: Nearest First' : 'Sort: Date (Nearest First)'}
+            </button>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600 dark:border-indigo-900 dark:border-t-indigo-500"></div>
@@ -168,9 +214,14 @@ export default function TasksPage() {
             <h3 className="text-lg font-medium text-slate-900 dark:text-white">No tasks found</h3>
             <p className="mt-1 text-slate-500 dark:text-slate-400">Get started by creating a new task.</p>
           </div>
+        ) : filteredAndSortedTasks.length === 0 ? (
+          <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No tasks match your filter</h3>
+            <p className="mt-1 text-slate-500 dark:text-slate-400">Try selecting a different subject.</p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tasks.map((task) => (
+            {filteredAndSortedTasks.map((task) => (
               <div
                 key={task.id}
                 className={`group relative flex flex-col justify-between rounded-2xl p-6 shadow-sm ring-1 transition-all ${

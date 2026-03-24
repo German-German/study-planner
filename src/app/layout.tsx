@@ -38,10 +38,12 @@ export default function RootLayout({
                 <a href="/" className="text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors">Home</a>
                 <a href="/tasks" className="text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors">Tasks</a>
                 <a href="/tasks/new" className="text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors">New Task</a>
+                <a href="/account" className="text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 transition-colors">Account</a>
               </div>
             </div>
             <div className="flex md:hidden items-center gap-4 text-sm font-medium">
               <a href="/tasks" className="text-slate-600 dark:text-slate-300">Tasks</a>
+              <a href="/account" className="text-slate-600 dark:text-slate-300">Account</a>
             </div>
           </div>
         </nav>
