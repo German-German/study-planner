@@ -17,14 +17,12 @@ interface Stats {
 export default function AnalyticsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
+    setHasMounted(true);
     fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => {
-        setStats(data);
-        setLoading(false);
-      })
+//...
       .catch(err => {
         console.error('Failed to fetch stats', err);
         setLoading(false);
@@ -38,7 +36,7 @@ export default function AnalyticsPage() {
   );
 
   const dailyGoal = 5;
-  const todayCount = stats?.completedTasks[new Date().getDay() - 1]?.count || 0;
+  const todayCount = hasMounted ? (stats?.completedTasks[new Date().getDay() - 1]?.count || 0) : 0;
   const progressPercent = Math.min((todayCount / dailyGoal) * 100, 100);
 
   const pieData = [
@@ -141,8 +139,12 @@ export default function AnalyticsPage() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <p className="text-4xl font-extrabold text-slate-900 dark:text-white">{Math.round(progressPercent)}%</p>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{todayCount} / {dailyGoal} Tasks</p>
+                {hasMounted && (
+                  <>
+                    <p className="text-4xl font-extrabold text-slate-900 dark:text-white">{Math.round(progressPercent)}%</p>
+                    <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{todayCount} / {dailyGoal} Tasks</p>
+                  </>
+                )}
               </div>
             </div>
             <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">
