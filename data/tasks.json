@@ -9,14 +9,6 @@
       "completed": false
     },
     {
-      "id": 5,
-      "title": "Test Task",
-      "dueDate": "2026-04-01",
-      "subject": "Computer Science",
-      "priority": "high",
-      "completed": false
-    },
-    {
       "id": 6,
       "title": "Test Math",
       "dueDate": "2026-03-27",
