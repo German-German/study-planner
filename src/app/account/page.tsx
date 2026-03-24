@@ -8,7 +8,8 @@ export default function AccountPage() {
     name: '',
     avatarUrl: '',
     university: '',
-    major: ''
+    major: '',
+    coins: 0
   });
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
