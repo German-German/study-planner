@@ -234,7 +234,14 @@ export default function TasksPage() {
         ) : tasks.length === 0 ? (
           <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
             <h3 className="text-lg font-medium text-slate-900 dark:text-white">No tasks found</h3>
-            <p className="mt-1 text-slate-500 dark:text-slate-400">Get started by creating a new task.</p>
+            <p className="mt-1 text-slate-500 dark:text-slate-400 mb-6">Get started by creating a new task.</p>
+            <Link 
+              href="/tasks/new"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-500 transition-all active:scale-95"
+            >
+              <Plus className="w-4 h-4" />
+              Create First Task
+            </Link>
           </div>
         ) : filteredAndSortedTasks.length === 0 ? (
           <div className="text-center py-20 bg-white dark:bg-slate-900 rounded-2xl shadow-sm ring-1 ring-slate-200 dark:ring-slate-800">
