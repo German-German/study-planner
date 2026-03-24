@@ -134,6 +134,9 @@ export default function TasksPage() {
       });
 
       if (response.ok) {
+        // Now delete it from the task list (backend)
+        await fetch(`/api/tasks/${task.id}`, { method: 'DELETE' });
+        
         setTasks(prev => prev.filter(t => t.id !== task.id));
         setGradingTaskId(null);
         setGradeValue('A');

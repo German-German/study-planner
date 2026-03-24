@@ -10,9 +10,7 @@ export async function PUT(
 ) {
   try {
     const resolvedParams = await params;
-    // Manually extract ID from URL to avoid Next14/15 param await issues
-    const idStr = request.url.split('/').pop() || resolvedParams.id;
-    const id = parseInt(idStr, 10);
+    const id = parseInt(resolvedParams.id, 10);
     
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid task ID' }, { status: 400 });
@@ -53,8 +51,8 @@ export async function DELETE(
 ) {
   try {
     const resolvedParams = await params;
-    const idStr = request.url.split('/').pop() || resolvedParams.id;
-    const id = parseInt(idStr, 10);
+    const id = parseInt(resolvedParams.id, 10);
+    console.log(`Deleting task with ID: ${id}`);
     
     if (isNaN(id)) {
       return NextResponse.json({ error: 'Invalid task ID' }, { status: 400 });

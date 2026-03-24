@@ -53,11 +53,11 @@ export async function POST(req: NextRequest) {
         
         if (body.focusTimeMinutes) {
             stats.dailyFocusTime = (stats.dailyFocusTime || 0) + body.focusTimeMinutes;
+            stats.totalFocusTime = (stats.totalFocusTime || 0) + body.focusTimeMinutes;
             stats.totalFocusSessions = (stats.totalFocusSessions || 0) + 1;
             
             // Reward coins (10 per session)
             try {
-                // Ensure profile file exists or create with default
                 try {
                     await fs.access(PROFILE_PATH);
                 } catch {
@@ -77,11 +77,20 @@ export async function POST(req: NextRequest) {
         
         if (body.newGrade) {
             stats.grades = [body.newGrade, ...(stats.grades || [])];
-            const dayOfWeek = (new Date()).getDay(); // 0 for Sunday, 1 for Monday, etc.
-            // Adjust to 0 for Monday, 6 for Sunday if weeklyProgress is Mon-Sun
-            const adjustedDayOfWeek = (dayOfWeek === 0) ? 6 : dayOfWeek - 1; 
-            stats.weeklyProgress = stats.weeklyProgress || [0, 0, 0, 0, 0, 0, 0];
-            stats.weeklyProgress[adjustedDayOfWeek] += 1;
+            
+            // Update completedTasks for Analytics BarChart
+            const dayOfWeek = (new Date()).getDay(); // 0 for Sunday
+            const dayMap = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const todayDay = dayMap[dayOfWeek];
+            
+            if (!stats.completedTasks) {
+                stats.completedTasks = dayMap.map(d => ({ day: d, count: 0 }));
+            }
+            
+            const dayEntry = stats.completedTasks.find((d: any) => d.day === todayDay);
+            if (dayEntry) {
+                dayEntry.count += 1;
+            }
         }
 
         await fs.writeFile(STATS_PATH, JSON.stringify(stats, null, 2));
