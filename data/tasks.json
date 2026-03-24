@@ -1,22 +1,6 @@
 {
   "tasks": [
     {
-      "id": 2,
-      "title": "Read chapter 5",
-      "dueDate": "2026-03-18",
-      "subject": "Literature",
-      "priority": "medium",
-      "completed": true
-    },
-    {
-      "id": 3,
-      "title": "Prepare presentation slides",
-      "dueDate": "2026-03-22",
-      "subject": "History",
-      "priority": "low",
-      "completed": false
-    },
-    {
       "id": 4,
       "title": "literature",
       "dueDate": "2026-03-31",

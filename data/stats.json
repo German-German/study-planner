@@ -2,13 +2,41 @@
   "coins": 0,
   "totalFocusTime": 0,
   "completedTasks": [
-    { "day": "Mon", "count": 2 },
-    { "day": "Tue", "count": 5 },
-    { "day": "Wed", "count": 3 },
-    { "day": "Thu", "count": 1 },
-    { "day": "Fri", "count": 4 },
-    { "day": "Sat", "count": 0 },
-    { "day": "Sun", "count": 0 }
+    {
+      "day": "Mon",
+      "count": 2
+    },
+    {
+      "day": "Tue",
+      "count": 6
+    },
+    {
+      "day": "Wed",
+      "count": 3
+    },
+    {
+      "day": "Thu",
+      "count": 1
+    },
+    {
+      "day": "Fri",
+      "count": 4
+    },
+    {
+      "day": "Sat",
+      "count": 0
+    },
+    {
+      "day": "Sun",
+      "count": 0
+    }
   ],
-  "grades": []
+  "grades": [
+    {
+      "taskTitle": "Read chapter 5",
+      "subject": "Literature",
+      "grade": "A",
+      "date": "24/03/2026"
+    }
+  ]
 }
